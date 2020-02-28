@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -31,14 +32,19 @@ object Form1: TForm1
       item
         Width = 50
       end>
-    ExplicitLeft = 208
-    ExplicitTop = 176
-    ExplicitWidth = 0
+  end
+  object Memo1: TMemo
+    Left = 240
+    Top = 48
+    Width = 209
+    Height = 129
+    TabOrder = 2
   end
   object ClientSocket1: TClientSocket
     Active = False
     ClientType = ctNonBlocking
     Port = 0
+    OnConnect = ClientSocket1Connect
     Left = 96
     Top = 32
   end
