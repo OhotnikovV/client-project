@@ -15,8 +15,8 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
-    Left = 16
-    Top = 207
+    Left = 8
+    Top = 191
     Width = 75
     Height = 25
     Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
@@ -32,7 +32,6 @@ object Form1: TForm1
       item
         Width = 50
       end>
-    ExplicitWidth = 504
   end
   object Memo1: TMemo
     Left = 8
@@ -42,10 +41,13 @@ object Form1: TForm1
     TabOrder = 2
   end
   object ClientSocket1: TClientSocket
-    Active = False
+    Active = True
+    Address = '192.168.100.3'
     ClientType = ctNonBlocking
-    Port = 0
+    Port = 65000
     OnConnect = ClientSocket1Connect
+    OnDisconnect = ClientSocket1Disconnect
+    OnError = ClientSocket1Error
     Left = 352
     Top = 192
   end

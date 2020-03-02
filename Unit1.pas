@@ -20,6 +20,10 @@ type
       Socket: TCustomWinSocket);
     procedure FormCreate(Sender: TObject);
     procedure ClientSocket1Connect(Sender: TObject; Socket: TCustomWinSocket);
+    procedure ClientSocket1Disconnect(Sender: TObject;
+      Socket: TCustomWinSocket);
+    procedure ClientSocket1Error(Sender: TObject; Socket: TCustomWinSocket;
+      ErrorEvent: TErrorEvent; var ErrorCode: Integer);
   private
     { Private declarations }
   public
@@ -44,17 +48,30 @@ end;
 procedure TForm1.ClientSocket1Connect(Sender: TObject;
   Socket: TCustomWinSocket);
 begin
-  if ClientSocket1.Active then
-    Statusbar1.Panels.Items[0].Text:='Connection to ServerSocket1 192.168.100.3'; // вывод сообщения о подключении
+  Statusbar1.Panels.Items[0].Text:='Connection to '+Socket.RemoteAddress;
+end;
+
+// Процедура -  сервер отключился
+procedure TForm1.ClientSocket1Disconnect(Sender: TObject;
+  Socket: TCustomWinSocket);
+begin
+  Statusbar1.Panels.Items[0].Text:='Server not found '+Socket.RemoteAddress;
+end;
+
+// Процедура -  при возникновении ошибки
+procedure TForm1.ClientSocket1Error(Sender: TObject; Socket: TCustomWinSocket;
+  ErrorEvent: TErrorEvent; var ErrorCode: Integer);
+begin
+  ErrorCode:=0;
 end;
 
 // Процедура - при создании формы
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   // активировать клиент, подключится к серверу
-  ClientSocket1.Address := '192.168.100.3'; // IP адрес сервера
+  {ClientSocket1.Address := '192.168.100.3'; // IP адрес сервера
   ClientSocket1.Port := 65000; // его порт
-  ClientSocket1.Active := True; // активируем клиента
+  ClientSocket1.Active := True; // активируем клиента}
   ClientSocket1.Open; // запускаем
 
   //включаем сервер  для обратной связи
