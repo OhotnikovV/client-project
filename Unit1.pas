@@ -57,10 +57,8 @@ procedure TForm1.ClientSocket1Connect(Sender: TObject;
   Socket: TCustomWinSocket);
 begin
   Statusbar1.Panels.Items[0].Text:='Connection to '+Socket.RemoteAddress;
-
-  // отправить xml сообщение с даннами
+  // отправить xml сообщение с даннами при запуске
   ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
-  Memo1.Lines.Add('Сообщение отправлено');
 end;
 
 // Процедура -  сервер отключился
@@ -80,12 +78,18 @@ end;
 // Процедура -  при передаче сообщения от сервера клиенту
 procedure TForm1.ClientSocket1Read(Sender: TObject; Socket: TCustomWinSocket);
 begin
-  Memo1.Lines.Add(Socket.ReceiveText);
+  if Socket.ReceiveText = 'need date' then
+  begin
+    // отправить xml сообщение с даннами
+    ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+    Memo1.Lines.Add('Сообщение отправлено');
+  end;
 end;
 
 // Процедура - при закрытии формы
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  // отправить xml сообщение с даннами при закрытии
   ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
 end;
 
@@ -104,7 +108,7 @@ begin
   ServerSocket1.Open; // запускаем       }
 end;
 
-// Процедура - клиент установил сокетное соединение и ждет ответа сервера
+// Процедура - клиент передал cерверу какие-либо данные
 procedure TForm1.ServerSocket1ClientRead(Sender: TObject;
   Socket: TCustomWinSocket);
 begin

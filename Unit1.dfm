@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = #1050#1083#1080#1077#1085#1090
-  ClientHeight = 257
+  Caption = 'Client'
+  ClientHeight = 256
   ClientWidth = 481
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,13 +17,14 @@ object Form1: TForm1
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 238
+    Top = 237
     Width = 481
     Height = 19
     Panels = <
       item
         Width = 50
       end>
+    ExplicitTop = 238
   end
   object Memo1: TMemo
     Left = 8
