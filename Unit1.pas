@@ -6,18 +6,28 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Win.ScktComp,
-  Vcl.ComCtrls, Vcl.ExtCtrls, NB30;
+  Vcl.ComCtrls, Vcl.ExtCtrls, NB30, Vcl.Menus, WinSock;
 
 type
   TForm1 = class(TForm)
     ClientSocket1: TClientSocket;
-    ServerSocket1: TServerSocket;
     StatusBar1: TStatusBar;
     Memo1: TMemo;
     TrayIcon1: TTrayIcon;
     Button2: TButton;
-    procedure ServerSocket1ClientRead(Sender: TObject;
-      Socket: TCustomWinSocket);
+    PopupMenu1: TPopupMenu;
+    Setting1: TMenuItem;
+    Exit1: TMenuItem;
+    LabeName: TLabel;
+    LabelIP: TLabel;
+    LabelMAC: TLabel;
+    LabelGetName: TLabel;
+    LabelGetIP: TLabel;
+    LabelGetMAC: TLabel;
+    GroupBox1: TGroupBox;
+    Panel1: TPanel;
+    Label1: TLabel;
+    Charrter1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ClientSocket1Connect(Sender: TObject; Socket: TCustomWinSocket);
     procedure ClientSocket1Disconnect(Sender: TObject;
@@ -28,8 +38,10 @@ type
     procedure TrayIcon1DblClick(Sender: TObject);
     procedure ClientSocket1Read(Sender: TObject; Socket: TCustomWinSocket);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Exit1Click(Sender: TObject);
   private
     function GetComputerNetName: string;
+    function GetLocalIP: string;
     function GetAdapterInfo(Lana: Char): string;
     function GetMACAddress: string;
     { Private declarations }
@@ -49,7 +61,6 @@ implementation
 procedure TForm1.Button2Click(Sender: TObject);
 begin
   Form1.Hide;
-  TrayIcon1.Visible:=true;
 end;
 
 // Процедура - при коннекте
@@ -86,6 +97,12 @@ begin
   end;
 end;
 
+// PopupMenu трея - выход
+procedure TForm1.Exit1Click(Sender: TObject);
+begin
+  Form1.Close;
+end;
+
 // Процедура - при закрытии формы
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -96,33 +113,24 @@ end;
 // Процедура - при создании формы
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  TrayIcon1.Visible:=true;
   // активировать клиент, подключится к серверу
   {ClientSocket1.Address := '192.168.100.3'; // IP адрес сервера
   ClientSocket1.Port := 65000; // его порт
   ClientSocket1.Active := True; // активируем клиента}
   ClientSocket1.Open; // запускаем
 
-  //включаем сервер  для обратной связи
-  {ServerSocket1.Port := 64000;
-  ServerSocket1.Active := True; // активируем сервер
-  ServerSocket1.Open; // запускаем       }
-end;
-
-// Процедура - клиент передал cерверу какие-либо данные
-procedure TForm1.ServerSocket1ClientRead(Sender: TObject;
-  Socket: TCustomWinSocket);
-begin
-  {if Socket.ReceiveText = 'cod' then // аутентификация
-      ClientSocket1.Socket.SendText('Привет');
-  else
-    ClientSocket1.Socket.SendText('not test'); }
+  // вывод информации о системе
+  LabelGetName.Caption:=GetComputerNetName;
+  LabelGetIP.Caption:=GetLocalIP;
+  LabelGetMAC.Caption:=GetMACAddress;
 end;
 
 // Вернуть форму на экран
 procedure TForm1.TrayIcon1DblClick(Sender: TObject);
 begin
   Form1.Show;
-  TrayIcon1.Visible:=False;
+  //TrayIcon1.Visible:=False;
 end;
 
 // Функция определения имени компьютера
@@ -136,6 +144,24 @@ begin
     Result := buffer
   else
     Result := ''
+end;
+
+// Функция определения IP адреса
+function TForm1.GetLocalIP: string;
+const WSVer = $101;
+var
+  wsaData: TWSAData;
+  P: PHostEnt;
+  Buf: array [0..127] of Char;
+begin
+  Result := '';
+  if WSAStartup(WSVer, wsaData) = 0 then begin
+    if GetHostName(@Buf, 128) = 0 then begin
+      P := GetHostByName(@Buf);
+      if P <> nil then Result := iNet_ntoa(PInAddr(p^.h_addr_list^)^);
+    end;
+    WSACleanup;
+  end;
 end;
 
 // Функция получения информации от сетевого адаптера
