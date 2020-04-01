@@ -31,8 +31,6 @@ object Form1: TForm1
       item
         Width = 50
       end>
-    ExplicitTop = 237
-    ExplicitWidth = 481
   end
   object Panel1: TPanel
     Left = 0
@@ -106,10 +104,6 @@ object Form1: TForm1
     Height = 103
     Align = alClient
     TabOrder = 2
-    ExplicitLeft = 1
-    ExplicitTop = 19
-    ExplicitWidth = 479
-    ExplicitHeight = 121
   end
   object ClientSocket1: TClientSocket
     Active = True
@@ -132,8 +126,9 @@ object Form1: TForm1
   object PopupMenu1: TPopupMenu
     Left = 344
     Top = 8
-    object Charrter1: TMenuItem
+    object Chatter1: TMenuItem
       Caption = 'Chatter'
+      OnClick = Chatter1Click
     end
     object Setting1: TMenuItem
       Caption = 'Settings'

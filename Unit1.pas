@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Win.ScktComp,
-  Vcl.ComCtrls, Vcl.ExtCtrls, NB30, Vcl.Menus, WinSock;
+  Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Menus,
+  NB30, WinSock, GetComputerInfo;
 
 type
   TForm1 = class(TForm)
@@ -27,7 +28,7 @@ type
     GroupBox1: TGroupBox;
     Panel1: TPanel;
     Label1: TLabel;
-    Charrter1: TMenuItem;
+    Chatter1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ClientSocket1Connect(Sender: TObject; Socket: TCustomWinSocket);
     procedure ClientSocket1Disconnect(Sender: TObject;
@@ -39,11 +40,8 @@ type
     procedure ClientSocket1Read(Sender: TObject; Socket: TCustomWinSocket);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Exit1Click(Sender: TObject);
+    procedure Chatter1Click(Sender: TObject);
   private
-    function GetComputerNetName: string;
-    function GetLocalIP: string;
-    function GetAdapterInfo(Lana: Char): string;
-    function GetMACAddress: string;
     { Private declarations }
   public
     { Public declarations }
@@ -56,6 +54,7 @@ implementation
 
 {$R *.dfm}
 
+uses Chatter;
 
 // Свернуть в трей
 procedure TForm1.Button2Click(Sender: TObject);
@@ -64,11 +63,16 @@ begin
 end;
 
 // Процедура - при коннекте
+procedure TForm1.Chatter1Click(Sender: TObject);
+begin
+  Form2.Show;
+end;
+
 procedure TForm1.ClientSocket1Connect(Sender: TObject;
   Socket: TCustomWinSocket);
 begin
   Statusbar1.Panels.Items[0].Text:='Connection to '+Socket.RemoteAddress;
-  // отправить xml сообщение с даннами при запуске
+  {Отправить xml сообщение с даннами при запуске}
   ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
 end;
 
@@ -88,10 +92,52 @@ end;
 
 // Процедура -  при передаче сообщения от сервера клиенту
 procedure TForm1.ClientSocket1Read(Sender: TObject; Socket: TCustomWinSocket);
+var
+  s:string;
+  from_,to_:string;
 begin
-  if Socket.ReceiveText = 'need date' then
+  //memo1.Lines.Add(Socket.ReceiveText);
+  s:=Socket.ReceiveText;
+
+  {Если если клиенту прислали запрос на имя компьютера, отправляем ответ.}
+  if Copy(s,1,2) = '#N' then begin
+    ClientSocket1.Socket.SendText('#N'+GetComputerNetName);
+    Exit;
+  end;
+
+  {Если сервер прислал нам список пользователей}
+  if Copy(s,1,2) = '#U' then
   begin
-    // отправить xml сообщение с даннами
+    Delete(s,1,2);
+    Form2.ListBox1.Items.Clear;
+    {Добавляем по одному имени клиента в ListBox}
+    while Pos(';',s) > 0 do
+    begin
+      Form2.ListBox1.Items.Add(Copy(s,1,Pos(';',s)-1));
+      Delete(s,1,Pos(';',s));
+    end;
+    Exit;
+  end;
+
+  {Если сервер прислал нам личное сообщение клиента}
+  if Copy(s,1,2) = '#P' then
+  begin
+    Delete(s,1,2);
+    {Выделяем в to_ - кому оно предназначено}
+    to_ := Copy(s,1,Pos(';',s)-1);
+    Delete(s,1,Pos(';',s));
+    {Выделяем в from_ - кем отправлено}
+    from_ := Copy(s,1,Pos(';',s)-1);
+    Delete(s,1,Pos(';',s));
+    {Если оно для нас, или написано нами - добавляем в Memo1}
+    if (to_ = GetComputerNetName)or(from_ = GetComputerNetName) then
+      Form2.Memo1.Lines.Insert(0,from_+' (private) > '+s);
+    Exit;
+  end;
+
+  {Если получаем сообщение с приставкой #date#, отправляем xml сообщение с даннами}
+  if s = '#date#' then
+  begin
     ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
     Memo1.Lines.Add('Сообщение отправлено');
   end;
@@ -106,21 +152,18 @@ end;
 // Процедура - при закрытии формы
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  // отправить xml сообщение с даннами при закрытии
+  {Отправить xml сообщение с даннами при закрытии}
   ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
 end;
 
 // Процедура - при создании формы
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  {Отображение программы в трее}
   TrayIcon1.Visible:=true;
-  // активировать клиент, подключится к серверу
-  {ClientSocket1.Address := '192.168.100.3'; // IP адрес сервера
-  ClientSocket1.Port := 65000; // его порт
-  ClientSocket1.Active := True; // активируем клиента}
-  ClientSocket1.Open; // запускаем
-
-  // вывод информации о системе
+  {Запускаем клиентский сокет}
+  ClientSocket1.Open;
+  {Вывод информации о системе}
   LabelGetName.Caption:=GetComputerNetName;
   LabelGetIP.Caption:=GetLocalIP;
   LabelGetMAC.Caption:=GetMACAddress;
@@ -130,92 +173,7 @@ end;
 procedure TForm1.TrayIcon1DblClick(Sender: TObject);
 begin
   Form1.Show;
-  //TrayIcon1.Visible:=False;
 end;
 
-// Функция определения имени компьютера
-function TForm1.GetComputerNetName: string;
-var
-  buffer: array[0..255] of char;
-  size: dword;
-begin
-  size := 256;
-  if GetComputerName(buffer, size) then
-    Result := buffer
-  else
-    Result := ''
-end;
-
-// Функция определения IP адреса
-function TForm1.GetLocalIP: string;
-const WSVer = $101;
-var
-  wsaData: TWSAData;
-  P: PHostEnt;
-  Buf: array [0..127] of Char;
-begin
-  Result := '';
-  if WSAStartup(WSVer, wsaData) = 0 then begin
-    if GetHostName(@Buf, 128) = 0 then begin
-      P := GetHostByName(@Buf);
-      if P <> nil then Result := iNet_ntoa(PInAddr(p^.h_addr_list^)^);
-    end;
-    WSACleanup;
-  end;
-end;
-
-// Функция получения информации от сетевого адаптера
-function TForm1.GetAdapterInfo(Lana: Char): string;
-var
-  Adapter: TAdapterStatus;
-  NCB: TNCB;
-begin
-  FillChar(NCB, SizeOf(NCB), 0);
-  NCB.ncb_command := Char(NCBRESET);
-  NCB.ncb_lana_num := AnsiChar(Lana);
-  if Netbios(@NCB) <> Char(NRC_GOODRET) then
-  begin
-    Result := 'Адрес не известен';
-    Exit;
-  end;
-
-  FillChar(NCB, SizeOf(NCB), 0);
-  NCB.ncb_command := Char(NCBASTAT);
-  NCB.ncb_lana_num := AnsiChar(Lana);
-  NCB.ncb_callname := '*';
-
-  FillChar(Adapter, SizeOf(Adapter), 0);
-  NCB.ncb_buffer := @Adapter;
-  NCB.ncb_length := SizeOf(Adapter);
-  if Netbios(@NCB) <> Char(NRC_GOODRET) then
-  begin
-    Result := 'Адрес не известен';
-    Exit;
-  end;
-  Result :=
-  IntToHex(Byte(Adapter.adapter_address[0]), 2) + '-' +
-  IntToHex(Byte(Adapter.adapter_address[1]), 2) + '-' +
-  IntToHex(Byte(Adapter.adapter_address[2]), 2) + '-' +
-  IntToHex(Byte(Adapter.adapter_address[3]), 2) + '-' +
-  IntToHex(Byte(Adapter.adapter_address[4]), 2) + '-' +
-  IntToHex(Byte(Adapter.adapter_address[5]), 2);
-end;
-
-// Функция определения МАК адреса адаптера
-function TForm1.GetMACAddress: string;
-var
-  AdapterList: TLanaEnum;
-  NCB: TNCB;
-begin
-  FillChar(NCB, SizeOf(NCB), 0);
-  NCB.ncb_command := Char(NCBENUM);
-  NCB.ncb_buffer := @AdapterList;
-  NCB.ncb_length := SizeOf(AdapterList);
-  Netbios(@NCB);
-  if Byte(AdapterList.length) > 0 then
-    Result := GetAdapterInfo(Char(AdapterList.lana[0]))
-  else
-    Result := 'Адрес не известен';
-end;
 
 end.
