@@ -73,7 +73,7 @@ procedure TForm1.ClientSocket1Connect(Sender: TObject;
 begin
   Statusbar1.Panels.Items[0].Text:='Connection to '+Socket.RemoteAddress;
   {Отправить xml сообщение с даннами при запуске}
-  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
 end;
 
 // Процедура -  сервер отключился
@@ -138,7 +138,7 @@ begin
   {Если получаем сообщение с приставкой #date#, отправляем xml сообщение с даннами}
   if s = '#date#' then
   begin
-    ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+    ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
     Memo1.Lines.Add('Сообщение отправлено');
   end;
 end;
@@ -153,7 +153,7 @@ end;
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   {Отправить xml сообщение с даннами при закрытии}
-  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
 end;
 
 // Процедура - при создании формы

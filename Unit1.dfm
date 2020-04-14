@@ -107,7 +107,7 @@ object Form1: TForm1
   end
   object ClientSocket1: TClientSocket
     Active = True
-    Address = '192.168.100.3'
+    Address = '127.0.0.1'
     ClientType = ctNonBlocking
     Port = 65000
     OnConnect = ClientSocket1Connect
