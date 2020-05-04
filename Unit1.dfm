@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Network Inventory - Client'
-  ClientHeight = 235
-  ClientWidth = 506
+  Caption = 'Network Administration - Agent'
+  ClientHeight = 158
+  ClientWidth = 349
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,25 +24,29 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 216
-    Width = 506
+    Top = 139
+    Width = 349
     Height = 19
     Panels = <
       item
         Width = 50
       end>
+    ExplicitTop = 216
+    ExplicitWidth = 506
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 506
-    Height = 113
-    Align = alTop
+    Width = 349
+    Height = 139
+    Align = alClient
     TabOrder = 1
+    ExplicitWidth = 506
+    ExplicitHeight = 113
     object GroupBox1: TGroupBox
       Left = 8
       Top = 5
-      Width = 249
+      Width = 329
       Height = 95
       Align = alCustom
       Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086' '#1089#1080#1089#1090#1077#1084#1077
@@ -87,44 +91,35 @@ object Form1: TForm1
         Height = 13
       end
     end
-    object Button2: TButton
-      Left = 424
-      Top = 75
+    object ButtonTray: TButton
+      Left = 264
+      Top = 106
       Width = 73
       Height = 25
       Caption = #1057#1074#1077#1088#1085#1091#1090#1100
       TabOrder = 1
-      OnClick = Button2Click
+      OnClick = ButtonTrayClick
     end
   end
-  object Memo1: TMemo
-    Left = 0
-    Top = 113
-    Width = 506
-    Height = 103
-    Align = alClient
-    TabOrder = 2
-  end
   object ClientSocket1: TClientSocket
-    Active = True
-    Address = '127.0.0.1'
+    Active = False
     ClientType = ctNonBlocking
     Port = 65000
     OnConnect = ClientSocket1Connect
     OnDisconnect = ClientSocket1Disconnect
     OnRead = ClientSocket1Read
     OnError = ClientSocket1Error
-    Left = 456
+    Left = 216
     Top = 8
   end
   object TrayIcon1: TTrayIcon
     PopupMenu = PopupMenu1
     OnDblClick = TrayIcon1DblClick
-    Left = 400
+    Left = 264
     Top = 8
   end
   object PopupMenu1: TPopupMenu
-    Left = 344
+    Left = 312
     Top = 8
     object Chatter1: TMenuItem
       Caption = 'Chatter'

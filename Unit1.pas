@@ -7,15 +7,14 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Win.ScktComp,
   Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Menus,
-  NB30, WinSock, GetComputerInfo;
+  NB30, WinSock, IniFiles, GetComputerInfo;
 
 type
   TForm1 = class(TForm)
     ClientSocket1: TClientSocket;
     StatusBar1: TStatusBar;
-    Memo1: TMemo;
     TrayIcon1: TTrayIcon;
-    Button2: TButton;
+    ButtonTray: TButton;
     PopupMenu1: TPopupMenu;
     Setting1: TMenuItem;
     Exit1: TMenuItem;
@@ -35,7 +34,7 @@ type
       Socket: TCustomWinSocket);
     procedure ClientSocket1Error(Sender: TObject; Socket: TCustomWinSocket;
       ErrorEvent: TErrorEvent; var ErrorCode: Integer);
-    procedure Button2Click(Sender: TObject);
+    procedure ButtonTrayClick(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
     procedure ClientSocket1Read(Sender: TObject; Socket: TCustomWinSocket);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -57,7 +56,7 @@ implementation
 uses Chatter;
 
 // Свернуть в трей
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TForm1.ButtonTrayClick(Sender: TObject);
 begin
   Form1.Hide;
 end;
@@ -96,6 +95,7 @@ var
   s:string;
   from_,to_:string;
 begin
+  s:='';
   //memo1.Lines.Add(Socket.ReceiveText);
   s:=Socket.ReceiveText;
 
@@ -139,7 +139,7 @@ begin
   if s = '#date#' then
   begin
     ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
-    Memo1.Lines.Add('Сообщение отправлено');
+    //Memo1.Lines.Add('Сообщение отправлено');
   end;
 end;
 
@@ -158,7 +158,16 @@ end;
 
 // Процедура - при создании формы
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  Ini:TIniFile;
 begin
+  {проверяем существует ли файл, если сущестувует - то находим}
+  if FileExists('config.ini') then
+  begin
+    Ini:=TIniFile.Create(ExtractFilePath(ParamStr(0))+'config.ini');
+  end;
+  {Присваиваем адрес для подключения к серверу}
+  ClientSocket1.Address:=Ini.ReadString('ClientSocket','Address','');
   {Отображение программы в трее}
   TrayIcon1.Visible:=true;
   {Запускаем клиентский сокет}
