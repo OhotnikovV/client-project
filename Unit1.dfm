@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Network Administration - Agent'
-  ClientHeight = 158
-  ClientWidth = 349
+  ClientHeight = 169
+  ClientWidth = 348
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,35 +15,29 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 152
-    Top = 224
-    Width = 31
-    Height = 13
-    Caption = 'Label1'
-  end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 139
-    Width = 349
+    Top = 150
+    Width = 348
     Height = 19
     Panels = <
       item
         Width = 50
       end>
-    ExplicitTop = 216
-    ExplicitWidth = 506
+    ExplicitTop = 139
+    ExplicitWidth = 349
   end
-  object Panel1: TPanel
+  object PanelInfo: TPanel
     Left = 0
     Top = 0
-    Width = 349
-    Height = 139
+    Width = 348
+    Height = 150
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 506
-    ExplicitHeight = 113
-    object GroupBox1: TGroupBox
+    ExplicitTop = -6
+    ExplicitWidth = 726
+    ExplicitHeight = 419
+    object GroupBoxInfo: TGroupBox
       Left = 8
       Top = 5
       Width = 329

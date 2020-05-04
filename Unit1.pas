@@ -24,9 +24,8 @@ type
     LabelGetName: TLabel;
     LabelGetIP: TLabel;
     LabelGetMAC: TLabel;
-    GroupBox1: TGroupBox;
-    Panel1: TPanel;
-    Label1: TLabel;
+    GroupBoxInfo: TGroupBox;
+    PanelInfo: TPanel;
     Chatter1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ClientSocket1Connect(Sender: TObject; Socket: TCustomWinSocket);
