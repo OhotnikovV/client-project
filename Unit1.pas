@@ -108,11 +108,11 @@ begin
   if Copy(s,1,2) = '#U' then
   begin
     Delete(s,1,2);
-    Form2.ListBox1.Items.Clear;
+    Form2.ListBoxUsers.Items.Clear;
     {ƒобавл€ем по одному имени клиента в ListBox}
     while Pos(';',s) > 0 do
     begin
-      Form2.ListBox1.Items.Add(Copy(s,1,Pos(';',s)-1));
+      Form2.ListBoxUsers.Items.Add(Copy(s,1,Pos(';',s)-1));
       Delete(s,1,Pos(';',s));
     end;
     Exit;
@@ -129,8 +129,8 @@ begin
     from_ := Copy(s,1,Pos(';',s)-1);
     Delete(s,1,Pos(';',s));
     {≈сли оно дл€ нас, или написано нами - добавл€ем в Memo1}
-    if (to_ = GetComputerNetName)or(from_ = GetComputerNetName) then
-      Form2.Memo1.Lines.Insert(0,from_+' (private) > '+s);
+    if (to_ = GetComputerNetName) or (from_ = GetComputerNetName) then
+      Form2.MemoChat.Lines.Insert(0, from_+': '+s);
     Exit;
   end;
 

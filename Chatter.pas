@@ -8,14 +8,16 @@ uses
 
 type
   TForm2 = class(TForm)
-    Memo1: TMemo;
-    Edit1: TEdit;
-    ListBox1: TListBox;
-    Button1: TButton;
-    GroupBox1: TGroupBox;
-    GroupBox2: TGroupBox;
-    Panel1: TPanel;
-    procedure Button1Click(Sender: TObject);
+    MemoChat: TMemo;
+    EditSend: TEdit;
+    ListBoxUsers: TListBox;
+    ButtonSend: TButton;
+    GroupBoxUsers: TGroupBox;
+    GroupBoxChat: TGroupBox;
+    PanelString: TPanel;
+    procedure ButtonSendClick(Sender: TObject);
+    procedure EditSendKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -31,23 +33,30 @@ implementation
 
 uses Unit1;
 
-procedure TForm2.Button1Click(Sender: TObject);
+procedure TForm2.ButtonSendClick(Sender: TObject);
 var
-  privat,msg:string;
+  privat, msg: string;
 begin
-  if ListBox1.ItemIndex < 0 then begin
-    ShowMessage('At first you should select the user in the User List!');
+  if ListBoxUsers.ItemIndex < 0 then begin
+    ShowMessage('¬ыберите пользовател€ в списке пользователей!');
     Exit;
   end;
-  {≈сли это приватное сообщение}
-  privat := '#P'+ListBox1.Items[ListBox1.ItemIndex]+';'; {добавл€ем спец.команду и адресат}
+  {добавл€ем тег и адресат}
+  privat := '#P'+ListBoxUsers.Items[ListBoxUsers.ItemIndex]+';';
   {ƒобавл€ем наше им€ (от кого) и само сообщение}
-  msg := privat+GetComputerNetName+';'+Edit1.Text;
+  msg := privat + GetComputerNetName+';'+EditSend.Text;
   {ѕосылаем все это добро по сокету}
   Form1.ClientSocket1.Socket.SendText(msg);
   {» снова ждем ввода в уже чистом TEdit-е}
-  Edit1.Text := '';
-  ActiveControl := Edit1;
+  EditSend.Text := '';
+  ActiveControl := EditSend;
+end;
+
+procedure TForm2.EditSendKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+     ButtonSend.Click;
 end;
 
 end.
