@@ -33,6 +33,7 @@ implementation
 
 uses Unit1;
 
+// Отправить сообщение
 procedure TForm2.ButtonSendClick(Sender: TObject);
 var
   privat, msg: string;
@@ -41,17 +42,17 @@ begin
     ShowMessage('Выберите пользователя в списке пользователей!');
     Exit;
   end;
-  {добавляем тег и адресат}
+  {Добавляем тег и имя выбранного компьютера}
   privat := '#P'+ListBoxUsers.Items[ListBoxUsers.ItemIndex]+';';
-  {Добавляем наше имя (от кого) и само сообщение}
+  {Добавляем имя нашего компьютера и сообщение}
   msg := privat + GetComputerNetName+';'+EditSend.Text;
-  {Посылаем все это добро по сокету}
   Form1.ClientSocket1.Socket.SendText(msg);
   {И снова ждем ввода в уже чистом TEdit-е}
   EditSend.Text := '';
   ActiveControl := EditSend;
 end;
 
+//Отправить сообщение через Enter
 procedure TForm2.EditSendKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin

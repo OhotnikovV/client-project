@@ -24,8 +24,6 @@ object Form1: TForm1
       item
         Width = 50
       end>
-    ExplicitTop = 139
-    ExplicitWidth = 349
   end
   object PanelInfo: TPanel
     Left = 0
@@ -34,9 +32,6 @@ object Form1: TForm1
     Height = 150
     Align = alClient
     TabOrder = 1
-    ExplicitTop = -6
-    ExplicitWidth = 726
-    ExplicitHeight = 419
     object GroupBoxInfo: TGroupBox
       Left = 8
       Top = 5

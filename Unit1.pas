@@ -70,8 +70,6 @@ procedure TForm1.ClientSocket1Connect(Sender: TObject;
   Socket: TCustomWinSocket);
 begin
   Statusbar1.Panels.Items[0].Text:='Connection to '+Socket.RemoteAddress;
-  {Отправить xml сообщение с даннами при запуске}
-  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
 end;
 
 // Процедура -  сервер отключился
@@ -95,15 +93,14 @@ var
   from_,to_:string;
 begin
   s:='';
-  //memo1.Lines.Add(Socket.ReceiveText);
   s:=Socket.ReceiveText;
-
-  {Если если клиенту прислали запрос на имя компьютера, отправляем ответ.}
-  if Copy(s,1,2) = '#N' then begin
-    ClientSocket1.Socket.SendText('#N'+GetComputerNetName);
+  {Если если пришел запрос на данные компьютера, отправляем ответ.}
+  if Copy(s,1,2) = '#N' then
+  begin
+    Delete(s,1,2);
+    ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
     Exit;
   end;
-
   {Если сервер прислал нам список пользователей}
   if Copy(s,1,2) = '#U' then
   begin
@@ -117,15 +114,14 @@ begin
     end;
     Exit;
   end;
-
   {Если сервер прислал нам личное сообщение клиента}
   if Copy(s,1,2) = '#P' then
   begin
     Delete(s,1,2);
-    {Выделяем в to_ - кому оно предназначено}
+    {Записываем имя компьютера кому пришло сообщение}
     to_ := Copy(s,1,Pos(';',s)-1);
     Delete(s,1,Pos(';',s));
-    {Выделяем в from_ - кем отправлено}
+    {Имя компьютера от кого сообщение}
     from_ := Copy(s,1,Pos(';',s)-1);
     Delete(s,1,Pos(';',s));
     {Если оно для нас, или написано нами - добавляем в Memo1}
@@ -133,12 +129,10 @@ begin
       Form2.MemoChat.Lines.Insert(0, from_+': '+s);
     Exit;
   end;
-
   {Если получаем сообщение с приставкой #date#, отправляем xml сообщение с даннами}
   if s = '#date#' then
   begin
     ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
-    //Memo1.Lines.Add('Сообщение отправлено');
   end;
 end;
 
@@ -153,6 +147,7 @@ procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   {Отправить xml сообщение с даннами при закрытии}
   ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+  TrayIcon1.Visible:=false;
 end;
 
 // Процедура - при создании формы
@@ -182,6 +177,5 @@ procedure TForm1.TrayIcon1DblClick(Sender: TObject);
 begin
   Form1.Show;
 end;
-
 
 end.

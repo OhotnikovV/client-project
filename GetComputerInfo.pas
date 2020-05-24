@@ -1,6 +1,7 @@
 unit GetComputerInfo;
 
 interface
+
 uses
   Winapi.Windows, System.SysUtils, NB30, WinSock;
 
