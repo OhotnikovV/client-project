@@ -69,6 +69,7 @@ end;
 procedure TForm1.ClientSocket1Connect(Sender: TObject;
   Socket: TCustomWinSocket);
 begin
+  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
   Statusbar1.Panels.Items[0].Text:='Connection to '+Socket.RemoteAddress;
 end;
 
@@ -98,7 +99,7 @@ begin
   if Copy(s,1,2) = '#N' then
   begin
     Delete(s,1,2);
-    ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+    ClientSocket1.Socket.SendText('#N'+GetComputerNetName);
     Exit;
   end;
   {≈сли сервер прислал нам список пользователей}
