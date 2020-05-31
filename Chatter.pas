@@ -43,7 +43,13 @@ begin
     Exit;
   end;
   {Добавляем тег и имя выбранного компьютера}
-  privat := '#P'+ListBoxUsers.Items[ListBoxUsers.ItemIndex]+';';
+  if ListBoxUsers.ItemIndex = 0 then
+  begin
+    privat := '#M';
+  end else
+  begin
+    privat := '#P'+ListBoxUsers.Items[ListBoxUsers.ItemIndex]+';';
+  end;
   {Добавляем имя нашего компьютера и сообщение}
   msg := privat + GetComputerNetName+';'+EditSend.Text;
   Form1.ClientSocket1.Socket.SendText(msg);

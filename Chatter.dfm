@@ -28,6 +28,8 @@ object Form2: TForm2
       Height = 96
       Align = alClient
       ItemHeight = 13
+      Items.Strings = (
+        #1042#1089#1077)
       TabOrder = 0
     end
   end

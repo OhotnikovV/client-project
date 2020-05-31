@@ -47,6 +47,8 @@ type
 
 var
   Form1: TForm1;
+  s:string;
+  msgfrom,msgto:string;
 
 implementation
 
@@ -60,12 +62,13 @@ begin
   Form1.Hide;
 end;
 
-// Процедура - при коннекте
+//Открываем чат
 procedure TForm1.Chatter1Click(Sender: TObject);
 begin
   Form2.Show;
 end;
 
+// Процедура - при коннекте
 procedure TForm1.ClientSocket1Connect(Sender: TObject;
   Socket: TCustomWinSocket);
 begin
@@ -89,13 +92,10 @@ end;
 
 // Процедура -  при передаче сообщения от сервера клиенту
 procedure TForm1.ClientSocket1Read(Sender: TObject; Socket: TCustomWinSocket);
-var
-  s:string;
-  from_,to_:string;
 begin
   s:='';
   s:=Socket.ReceiveText;
-  {Если если пришел запрос на данные компьютера, отправляем ответ.}
+  {Если если пришел запрос на имя компьютера, отправляем ответ.}
   if Copy(s,1,2) = '#N' then
   begin
     Delete(s,1,2);
@@ -107,6 +107,7 @@ begin
   begin
     Delete(s,1,2);
     Form2.ListBoxUsers.Items.Clear;
+    Form2.ListBoxUsers.Items.Add('Все');
     {Добавляем по одному имени клиента в ListBox}
     while Pos(';',s) > 0 do
     begin
@@ -115,24 +116,34 @@ begin
     end;
     Exit;
   end;
+  {Если сервер прислал нам сообщение для ВСЕХ}
+  if Copy(s,1,2) = '#M' then
+  begin
+     Delete(s,1,2);
+     {Добавляем сообщение для всех с именем отправителя}
+     Form2.MemoChat.Lines.Insert(0,Copy(s,1,Pos(';',s)-1)+': '+
+                          Copy(s,Pos(';',s)+1,Length(s)-Pos(';',s)));
+     Exit;
+  end;
   {Если сервер прислал нам личное сообщение клиента}
   if Copy(s,1,2) = '#P' then
   begin
     Delete(s,1,2);
     {Записываем имя компьютера кому пришло сообщение}
-    to_ := Copy(s,1,Pos(';',s)-1);
+    msgto := Copy(s,1,Pos(';',s)-1);
     Delete(s,1,Pos(';',s));
     {Имя компьютера от кого сообщение}
-    from_ := Copy(s,1,Pos(';',s)-1);
+    msgfrom := Copy(s,1,Pos(';',s)-1);
     Delete(s,1,Pos(';',s));
     {Если оно для нас, или написано нами - добавляем в Memo1}
-    if (to_ = GetComputerNetName) or (from_ = GetComputerNetName) then
-      Form2.MemoChat.Lines.Insert(0, from_+': '+s);
+    if (msgto = GetComputerNetName) or (msgfrom = GetComputerNetName) then
+      Form2.MemoChat.Lines.Insert(0, msgfrom+' (личное): '+s);
     Exit;
   end;
   {Если получаем сообщение с приставкой #date#, отправляем xml сообщение с даннами}
-  if s = '#date#' then
+  if Copy(s,1,3) = '#D#' then
   begin
+    Delete(s,1,3);
     ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
   end;
 end;
