@@ -111,15 +111,15 @@ object Form1: TForm1
     Left = 312
     Top = 8
     object Chatter1: TMenuItem
-      Caption = 'Chatter'
+      Caption = #1063#1072#1090
       OnClick = Chatter1Click
     end
     object Setting1: TMenuItem
-      Caption = 'Settings'
+      Caption = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100
       OnClick = TrayIcon1DblClick
     end
     object Exit1: TMenuItem
-      Caption = 'Exit'
+      Caption = #1042#1099#1093#1086#1076
       OnClick = Exit1Click
     end
   end

@@ -33,25 +33,26 @@ implementation
 
 uses Unit1;
 
+var
+  identif, msg: string;
+
 // Отправить сообщение
 procedure TForm2.ButtonSendClick(Sender: TObject);
-var
-  privat, msg: string;
 begin
   if ListBoxUsers.ItemIndex < 0 then begin
-    ShowMessage('Выберите пользователя в списке пользователей!');
+    ShowMessage('Выберите кому необходимо отправить сообщение!');
     Exit;
   end;
   {Добавляем тег и имя выбранного компьютера}
   if ListBoxUsers.ItemIndex = 0 then
   begin
-    privat := '#M';
+    identif := '#M';
   end else
   begin
-    privat := '#P'+ListBoxUsers.Items[ListBoxUsers.ItemIndex]+';';
+    identif := '#P'+ListBoxUsers.Items[ListBoxUsers.ItemIndex]+';';
   end;
   {Добавляем имя нашего компьютера и сообщение}
-  msg := privat + GetComputerNetName+';'+EditSend.Text;
+  msg := identif + GetComputerNetName+';'+EditSend.Text;
   Form1.ClientSocket1.Socket.SendText(msg);
   {И снова ждем ввода в уже чистом TEdit-е}
   EditSend.Text := '';

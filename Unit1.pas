@@ -72,7 +72,9 @@ end;
 procedure TForm1.ClientSocket1Connect(Sender: TObject;
   Socket: TCustomWinSocket);
 begin
-  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+
+  '</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'
+  +GetMACAddress+'</MAC_address></computers>');
   Statusbar1.Panels.Items[0].Text:='Connection to '+Socket.RemoteAddress;
 end;
 
@@ -144,7 +146,9 @@ begin
   if Copy(s,1,3) = '#D#' then
   begin
     Delete(s,1,3);
-    ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+    ClientSocket1.Socket.SendText('<computers><NameComputer>'
+    +GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+
+    '</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
   end;
 end;
 
@@ -158,7 +162,9 @@ end;
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   {Отправить xml сообщение с даннами при закрытии}
-  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+'</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'+GetMACAddress+'</MAC_address></computers>');
+  ClientSocket1.Socket.SendText('<computers><NameComputer>'+GetComputerNetName+
+  '</NameComputer><IP_address>'+GetLocalIP+'</IP_address><MAC_address>'
+  +GetMACAddress+'</MAC_address></computers>');
   TrayIcon1.Visible:=false;
 end;
 

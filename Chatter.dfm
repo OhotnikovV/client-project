@@ -1,7 +1,7 @@
 object Form2: TForm2
   Left = 0
   Top = 0
-  Caption = 'Chatter'
+  Caption = #1063#1072#1090
   ClientHeight = 349
   ClientWidth = 539
   Color = clBtnFace
